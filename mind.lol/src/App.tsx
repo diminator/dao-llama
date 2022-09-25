@@ -23,11 +23,12 @@ interface ConfigProviderState {
 export const supportedContracts = JSON.parse(process.env.REACT_APP_QUEUE_ADDRESS!)
 
 
-const Card = ({ gif, index, total }: any) => {
+const Card = ({ gif, index, beenActive, total }: any) => {
   const offsetX = 50 * ((index + 1) / total) ** 3
   const offsetY = 50 * ((index + 1) / total) ** 1
   const size = 600 * ((index + 1) / total) ** 3
-  if (size < 50 || total - index > 20 ) return <div/>
+  if (size < 50 || total - index > 20 ||
+    index < total - 3 && !beenActive ) return <div/>
   return (
     <div className="Card-container" style={{
       top: `calc(${offsetY}vh - ${size/2}px)`,
@@ -73,34 +74,35 @@ function App() {
     paramStory && parseInt(paramStory, 10) || 36)
   const [stories, setStories] = React.useState<string[]>([])
   const [active, setActive] = React.useState<number>(0)
+  const [beenActive, setBeenActive] = React.useState<any>({})
   const [fetchStories, setFetchStories] = React.useState<boolean>(true)
   const [fetchedStories, setFetchedStories] = React.useState<number[]>([])
 
 
   const handleStory = (data: any[]) => {
+    let parsedStories = data
     if (stories.length) {
-      const parsedStories = data.concat(stories).map((story, index) => {
-        if (index >= data.length)
-          story[0] += data.length
-        return story
-      })
-      setStories(parsedStories)
-      setActive(0)
-    } else {
-      setStories(data)
-      setActive(0)
+      parsedStories = data.concat(stories)
     }
+
+    parsedStories = parsedStories.map((story, index) => {
+      if (index >= data.length)
+        story[0] += data.length
+      if (!(Object.keys(beenActive).includes(story[2]))) {
+        beenActive[story[2]] = false
+      }
+      return story
+    })
+
+    setActive(0)
+    setStories(parsedStories)
     fetchedStories.push(story)
+    setBeenActive(beenActive)
     setFetchedStories(fetchedStories)
     setFetchStories(false)
   }
 
-  const handleCardClick = (e: any, storyIndex: number, activeIndex:number) => {
-    console.log(activeIndex, storyIndex, activeIndex/stories.length)
-    if (stories.length <= 10 || storyIndex > 10) {
-      setStory(story - 1)
-      setFetchStories(true)
-    }
+  const handleCardClick = (e: any, storyIndex: number) => {
     setActive(storyIndex)
   }
 
@@ -109,20 +111,32 @@ function App() {
       () => {
           if (active === stories.length - 1) {
             setActive(0)
-            console.log(active)
+            setStory(story + 1)
+            setFetchStories(true)
+          } else {
+            setActive(active + 1)
+            if (!beenActive[stories[active + 1]]) {
+              new Image().src = stories[active + 2][2]
+            }
+
           }
-          else setActive(active + 1)
       }, 3000
     )
     return () => clearTimeout(timer)
   })
+
+  React.useEffect(() => {
+    if (stories.length) {
+      beenActive[stories[active][2]] = true
+      setBeenActive(beenActive)
+    }
+  }, [active])
 
   const shiftedStories = stories
       .slice()
       .slice(active + 1, stories.length)
       .concat(stories.slice(0, active + 1))
 
-  // console.log(stories, shiftedStories, active)
   return (
     <WagmiConfig client={client}>
       <ConnectKitProvider>
@@ -132,11 +146,13 @@ function App() {
           )}
           <header className="App-header">
             {
-              shiftedStories.map((story: any, index: number) => (
-              <div key={story[1]+story[2]} onClick={e => handleCardClick(e, story[0], index)}>
+              shiftedStories
+                .map((story: any, index: number) => (
+              <div key={story[1]+story[2]} onClick={e => handleCardClick(e, story[0])}>
                 <Card
                   gif={story[2]}
                   index={index}
+                  beenActive={beenActive[story[2]]}
                   total={stories.length}/>
               </div>
             ))}

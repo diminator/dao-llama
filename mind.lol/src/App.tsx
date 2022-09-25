@@ -34,7 +34,9 @@ const Card = ({ gif, index, total }: any) => {
       width: `${size}px`,
       height: `${size}px`
     }}>
-      <img key={gif} src={gif} className="Card-img"/>
+      <img key={gif} src={gif} className="Card-img" style={{
+        opacity: size/600
+      }} />
     </div>
 )
 }

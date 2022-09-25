@@ -20,7 +20,7 @@ const Card = ({ gif, index, beenActive, total }: any) => {
   const offsetY = 50 * ((index + 1) / total) ** 1
   const size = 600 * ((index + 1) / total) ** 3
 
-  if ((size < 50 || total - index > 20) || (index < total - 1) && !beenActive) return null
+  if ((size < 50 || total - index > 30) || (index < total - 1) && !beenActive) return null
   return (
     <div className="Card-container" style={{
       top: `calc(${offsetY}vh - ${size/2}px)`,

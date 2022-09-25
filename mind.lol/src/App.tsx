@@ -45,11 +45,11 @@ const QueueStory = ({ contractConfig, story, onSuccess }: any) => {
     ...contractConfig,
     functionName: 'getPrompts',
     args: [story],
-    onSuccess: async (data) => {
+    onSuccess: async (data: any) => {
       // const metadata = await parseMetadata(data)
       console.log('getPrompts', data)
       data.length && onSuccess(
-        data.map((story, index) => [index, ...story]).reverse() as any[])
+        data.map((story: string[], index: number) => [index, ...story]) as any[])
     }
   })
 
@@ -83,10 +83,10 @@ function App() {
         return story
       })
       setStories(parsedStories)
-      setActive(active + data.length - 1)
+      setActive(0)
     } else {
       setStories(data)
-      setActive(data.length - 1)
+      setActive(0)
     }
     fetchedStories.push(story)
     setFetchedStories(fetchedStories)
@@ -94,6 +94,7 @@ function App() {
   }
 
   const handleCardClick = (e: any, storyIndex: number, activeIndex:number) => {
+    console.log(activeIndex, storyIndex, activeIndex/stories.length)
     if ( activeIndex / stories.length < 0.5) {
       setStory(story - 1)
       setFetchStories(true)
@@ -104,11 +105,11 @@ function App() {
   React.useEffect(() => {
     const timer = setTimeout(
       () => {
-          if (active === 0) {
-            setActive(stories.length)
+          if (active === stories.length - 1) {
+            setActive(0)
             console.log(active)
           }
-          else setActive(active - 1)
+          else setActive(active + 1)
       }, 3000
     )
     return () => clearTimeout(timer)
@@ -127,8 +128,8 @@ function App() {
           )}
           <header className="App-header">
             {
-              shiftedStories.map((story: any, index: number) => (
-              <div key={story[2]} onClick={e => handleCardClick(e, story[0], index)}>
+              shiftedStories.reverse().map((story: any, index: number) => (
+              <div key={story[1]+story[2]} onClick={e => handleCardClick(e, story[0], index)}>
                 <Card
                   gif={story[2]}
                   index={index}

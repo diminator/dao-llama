@@ -11,6 +11,10 @@
   position: absolute;
 }
 
+.Card-wrapper:last-child .Card-img {
+  z-index: 1000!important;
+}
+
 .Card-container:hover {
   z-index: 999;
   opacity: 1;
@@ -18,7 +22,6 @@
   .Card-img {
     border: 2px solid magenta;
     opacity: 0.95!important;
-    z-index: 999;
     cursor: pointer;
   }
 }
@@ -55,4 +58,45 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.Tabs-container {
+  position: absolute;
+  top: 0.2em;
+  list-style: none;
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.Tab {
+  height: 5px;
+  border-bottom: 2px solid gc(qD);
+  display: inline-block;
+  margin: 0 2px;
+  cursor: pointer;
+  flex: 1 0 auto;
+  background: grey;
+  opacity: 0.6;
+}
+
+.Tab:hover {
+  opacity: 1; 
+}
+
+.Tab-more {
+  color: magenta;
+  background: magenta;
+  .Tab-more-label {
+    visibility: hidden;
+  }
+  &:hover {
+    .Tab-more-label {
+      visibility: visible;
+    }
+  }
+}
+
+.active {
+  background: yellow;
 }

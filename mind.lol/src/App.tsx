@@ -27,8 +27,7 @@ const Card = ({ gif, index, beenActive, total }: any) => {
   const offsetX = 50 * ((index + 1) / total) ** 3
   const offsetY = 50 * ((index + 1) / total) ** 1
   const size = 600 * ((index + 1) / total) ** 3
-  if (size < 50 || total - index > 20 ||
-    index < total - 3 && !beenActive ) return <div/>
+  if (size < 50 || (index < total - 1) && !beenActive) return <div/>
   return (
     <div className="Card-container" style={{
       top: `calc(${offsetY}vh - ${size/2}px)`,
@@ -37,7 +36,7 @@ const Card = ({ gif, index, beenActive, total }: any) => {
       height: `${size}px`
     }}>
       <img key={gif} src={gif} className="Card-img" style={{
-        opacity: (size + 200)/600
+        opacity: (size + 50)/600
       }} />
     </div>
 )
@@ -53,7 +52,12 @@ const QueueStory = ({ contractConfig, story, onSuccess }: any) => {
       // const metadata = await parseMetadata(data)
       console.log('getPrompts', data)
       data.length && onSuccess(
-        data.map((story: string[], index: number) => [index, ...story]) as any[])
+        data.map((s: any[], index: number) => {
+          return {
+            index,
+            storyIndex: story,
+            ...s
+        }}) as any[])
     }
   })
 
@@ -71,8 +75,8 @@ function App() {
   }
 
   const [story, setStory] = React.useState<number>(
-    paramStory && parseInt(paramStory, 10) || 36)
-  const [stories, setStories] = React.useState<string[]>([])
+    paramStory && parseInt(paramStory, 10) || 41)
+  const [stories, setStories] = React.useState<any[]>([])
   const [active, setActive] = React.useState<number>(0)
   const [beenActive, setBeenActive] = React.useState<any>({})
   const [fetchStories, setFetchStories] = React.useState<boolean>(true)
@@ -80,57 +84,61 @@ function App() {
 
 
   const handleStory = (data: any[]) => {
-    let parsedStories = data
+    let parsedStories = data.slice()
     if (stories.length) {
-      parsedStories = data.concat(stories)
+      parsedStories = stories.concat(data)
     }
 
-    parsedStories = parsedStories.map((story, index) => {
-      if (index >= data.length)
-        story[0] += data.length
-      if (!(Object.keys(beenActive).includes(story[2]))) {
-        beenActive[story[2]] = false
+    parsedStories = parsedStories.map((s, index) => {
+      if (index >= stories.length)
+        s.index += stories.length
+      if (!(Object.keys(beenActive).includes(s.uri))) {
+        beenActive[s.uri] = false
       }
-      return story
+      return s
     })
 
-    setActive(0)
-    setStories(parsedStories)
+    setActive(stories.length)
+    setStories(parsedStories.filter(s => !!s.uri))
     fetchedStories.push(story)
     setBeenActive(beenActive)
     setFetchedStories(fetchedStories)
     setFetchStories(false)
   }
 
-  const handleCardClick = (e: any, storyIndex: number) => {
-    setActive(storyIndex)
+  const handleCardClick = (index: number) => {
+    setActive(index)
+  }
+
+  const handleTabClick = (index: number) => {
+    setActive(stories.filter(s => s.storyIndex === index)[0].index)
+  }
+
+  const handleTabMoreClick = () => {
+    setActive(0)
+    setStory(story + 1)
+    setFetchStories(true)
   }
 
   React.useEffect(() => {
     const timer = setTimeout(
       () => {
-          if (active === stories.length - 1) {
+          if (active >= stories.length - 1) {
             setActive(0)
             setStory(story + 1)
             setFetchStories(true)
           } else {
             setActive(active + 1)
-            if (!beenActive[stories[active + 1]]) {
-              new Image().src = stories[active + 2][2]
+            if (active < stories.length - 1 && !beenActive[stories[active + 1]]) {
+              beenActive[stories[active].uri] = true
+              setBeenActive(beenActive)
+              new Image().src = stories[active + 2].uri
             }
-
           }
       }, 3000
     )
     return () => clearTimeout(timer)
   })
-
-  React.useEffect(() => {
-    if (stories.length) {
-      beenActive[stories[active][2]] = true
-      setBeenActive(beenActive)
-    }
-  }, [active])
 
   const shiftedStories = stories
       .slice()
@@ -145,14 +153,35 @@ function App() {
             <QueueStory contractConfig={contractConfig} story={story} onSuccess={handleStory} />
           )}
           <header className="App-header">
+            <div className="Tabs-container">
+              {fetchedStories.length > 1 &&
+                fetchedStories.map((storyIndex: number) => {
+                  return (
+                    <div
+                      key={`tab-${storyIndex}`}
+                      className={`Tab ` + (stories[active].storyIndex === storyIndex ? 'active' : '')}
+                      onClick={() => handleTabClick(storyIndex)}
+                    />
+                  )
+                })}
+                <div
+                  key={`tab-more`}
+                  className={'Tab Tab-more'}
+                  onClick={handleTabMoreClick}
+                >
+                  <div className="Tab-more-label">next story</div>
+                </div>
+            </div>
             {
               shiftedStories
-                .map((story: any, index: number) => (
-              <div key={story[1]+story[2]} onClick={e => handleCardClick(e, story[0])}>
+                .map((s: any, index: number) => (
+              <div className="Card-wrapper"
+                key={s.prompt + s.uri}
+                onClick={() => handleCardClick(s.index)}>
                 <Card
-                  gif={story[2]}
+                  gif={s.uri}
                   index={index}
-                  beenActive={beenActive[story[2]]}
+                  beenActive={beenActive[s.uri]}
                   total={stories.length}/>
               </div>
             ))}

@@ -49,7 +49,7 @@ const QueueStory = ({ contractConfig, story, onSuccess }: any) => {
       // const metadata = await parseMetadata(data)
       console.log('getPrompts', data)
       data.length && onSuccess(
-        data.map((story, index) => [index, ...story]) as any[])
+        data.map((story, index) => [index, ...story]).reverse() as any[])
     }
   })
 
@@ -100,6 +100,19 @@ function App() {
     }
     setActive(storyIndex)
   }
+
+  React.useEffect(() => {
+    const timer = setTimeout(
+      () => {
+          if (active === 0) {
+            setActive(stories.length)
+            console.log(active)
+          }
+          else setActive(active - 1)
+      }, 3000
+    )
+    return () => clearTimeout(timer)
+  })
 
   const shiftedStories = active ? stories
       .slice(active + 1, stories.length)

@@ -118,7 +118,7 @@ function App() {
   })
 
   const shiftedStories = stories
-      .reverse()
+      .slice()
       .slice(active + 1, stories.length)
       .concat(stories.slice(0, active + 1))
 

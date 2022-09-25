@@ -1,37 +1,45 @@
 .App {
+  width: 100vw;
+  height: 100vh;
   text-align: center;
-  background-repeat: repeat;
-  background-size: 10%;
-  background-image: url(https://studio-abraham.infura-ipfs.io/ipfs/QmXaYPMyc3ujmnLG4Tg3Lq91LZcGWSwLzc4ouBzQkmCrrw?meta=Qma96CnitVV668cLBDx4pXBzTk6e6v1rGCpwc5rgiNMuvn);
+  background-size: cover;
+  background-image: url(https://studio-abraham.infura-ipfs.io/ipfs/QmS9pFauDLLJAhz92tcC9zZd69GjbGzsx3yEncCd7wM4BT?meta=QmNhPJQBxNMYfhbXb5qSpsjYvvhm2dwitrCTjivqFHGfB4zQkmCrrw?meta=Qma96CnitVV668cLBDx4pXBzTk6e6v1rGCpwc5rgiNMuvn);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.Card-container {
+  z-index: 0;
+}
+.Card-img:hover {
+  z-index: 999;
+  border: 2px solid magenta;
+}
+
+.Card-img {
+  position: absolute;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+  .Card-img {
+    // animation: App-logo-spin infinite 20s linear;
   }
 }
 
 .App-header {
-  min-height: 100vh;
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
+  // min-height: 100vh;
+  // display: flex;
+  // flex-wrap: wrap;
+  // flex-direction: row;
+  // align-items: center;
+  // justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  // color: white;
 }
 
 .App-link {
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
+@keyframes Card-img-spin {
   from {
     transform: rotate(0deg);
   }

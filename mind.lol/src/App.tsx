@@ -6,15 +6,7 @@ import queue from './artifacts/Queue.sol/Queue.json'
 import './App.scss'
 
 const alchemyId = process.env.REACT_APP_ALCHEMY_ID
-const chains = [chain.polygonMumbai, chain.goerli]
 
-const client = createClient(
-  getDefaultClient({
-    appName: 'Nevermined AI Prompt',
-    alchemyId,
-    chains
-  })
-)
 
 interface ConfigProviderState {
   addressOrName?: string
@@ -27,7 +19,7 @@ const Card = ({ gif, index, beenActive, total }: any) => {
   const offsetX = 50 * ((index + 1) / total) ** 3
   const offsetY = 50 * ((index + 1) / total) ** 1
   const size = 600 * ((index + 1) / total) ** 3
-  console.log(total-index)
+
   if ((size < 50 || total - index > 20) || (index < total - 1) && !beenActive) return null
   return (
     <div className="Card-container" style={{
@@ -74,7 +66,16 @@ function App() {
     addressOrName: (chainId && chainId === 'goerli') ? supportedContracts.goerli : supportedContracts.mumbai,
     contractInterface: queue.abi
   }
+  const chains = [(chainId && chainId === 'goerli') ? chain.goerli : chain.polygonMumbai]
 
+  const client = createClient(
+    getDefaultClient({
+      appName: 'Nevermined AI Prompt',
+      alchemyId,
+      chains
+    })
+  )
+  console.log(client)
   const [story, setStory] = React.useState<number>(
     paramStory && parseInt(paramStory, 10) || 41)
   const [stories, setStories] = React.useState<any[]>([])
@@ -83,7 +84,6 @@ function App() {
   const [beenActive, setBeenActive] = React.useState<any>({})
   const [fetchStories, setFetchStories] = React.useState<boolean>(true)
   const [fetchedStories, setFetchedStories] = React.useState<number[]>([])
-
 
   const handleStory = (data: any[]) => {
     let parsedStories = data.slice()

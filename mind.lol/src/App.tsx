@@ -145,7 +145,7 @@ function App() {
       .slice()
       .slice(active + 1, stories.length)
       .concat(stories.slice(0, active + 1))
-      
+
   return (
     <WagmiConfig client={client}>
       <ConnectKitProvider>
@@ -160,7 +160,7 @@ function App() {
                   return (
                     <div
                       key={`tab-${storyIndex}`}
-                      className={`Tab ` + (stories[active].storyIndex === storyIndex ? 'active' : '')}
+                      className={`Tab ` + (stories[active] && stories[active].storyIndex === storyIndex ? 'active' : '')}
                       onClick={() => handleTabClick(storyIndex)}
                     />
                   )

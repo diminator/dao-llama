@@ -115,9 +115,10 @@ function App() {
     return () => clearTimeout(timer)
   })
 
-  const shiftedStories = active ? stories
+  const shiftedStories = stories
       .slice(active + 1, stories.length)
-      .concat(stories.slice(0, active + 1)) : stories
+      .concat(stories.slice(0, active + 1))
+      .reverse()
   console.log(stories, shiftedStories, active)
   return (
     <WagmiConfig client={client}>
@@ -128,7 +129,7 @@ function App() {
           )}
           <header className="App-header">
             {
-              shiftedStories.reverse().map((story: any, index: number) => (
+              shiftedStories.map((story: any, index: number) => (
               <div key={story[1]+story[2]} onClick={e => handleCardClick(e, story[0], index)}>
                 <Card
                   gif={story[2]}

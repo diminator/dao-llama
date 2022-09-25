@@ -27,7 +27,8 @@ const Card = ({ gif, index, beenActive, total }: any) => {
   const offsetX = 50 * ((index + 1) / total) ** 3
   const offsetY = 50 * ((index + 1) / total) ** 1
   const size = 600 * ((index + 1) / total) ** 3
-  if (size < 50 || (index < total - 1) && !beenActive) return <div/>
+  console.log(total-index)
+  if ((size < 50 || total - index > 20) || (index < total - 1) && !beenActive) return null
   return (
     <div className="Card-container" style={{
       top: `calc(${offsetY}vh - ${size/2}px)`,
@@ -39,7 +40,7 @@ const Card = ({ gif, index, beenActive, total }: any) => {
         opacity: (size + 50)/600
       }} />
     </div>
-)
+  )
 }
 
 const QueueStory = ({ contractConfig, story, onSuccess }: any) => {
@@ -78,6 +79,7 @@ function App() {
     paramStory && parseInt(paramStory, 10) || 41)
   const [stories, setStories] = React.useState<any[]>([])
   const [active, setActive] = React.useState<number>(0)
+  const [pause, setPause] = React.useState<boolean>(false)
   const [beenActive, setBeenActive] = React.useState<any>({})
   const [fetchStories, setFetchStories] = React.useState<boolean>(true)
   const [fetchedStories, setFetchedStories] = React.useState<number[]>([])
@@ -119,9 +121,11 @@ function App() {
     setFetchStories(true)
   }
 
+  console.log(pause)
   React.useEffect(() => {
     const timer = setTimeout(
       () => {
+        if (!pause) {
           console.log(active)
           if (active >= stories.length - 2) {
             setStory(story - 1)
@@ -135,11 +139,33 @@ function App() {
           }
           if (active < stories.length - 2)
             new Image().src = stories[active + 2].uri
-
+        }
       }, 3000
     )
     return () => clearTimeout(timer)
   })
+
+  // User has switched back to the tab
+  const onFocus = () => {
+      setPause(false)
+  }
+
+  // User has switched away from the tab (AKA tab is hidden)
+  const onBlur = () => {
+      setPause(true)
+  }
+
+  React.useEffect(() => {
+      window.addEventListener("focus", onFocus)
+      window.addEventListener("blur", onBlur)
+      // Calls onFocus when the window first loads
+      onFocus()
+      // Specify how to clean up after this effect:
+      return () => {
+          window.removeEventListener("focus", onFocus)
+          window.removeEventListener("blur", onBlur)
+      }
+  }, [])
 
   const shiftedStories = stories
       .slice()

@@ -21,12 +21,13 @@
 
   .Card-img {
     border: 2px solid magenta;
-    opacity: 0.95!important;
+    opacity: 0.9!important;
     cursor: pointer;
   }
 }
 
 .Card-img {
+  border: 2px solid transparent;
   width: 100%;
 }
 

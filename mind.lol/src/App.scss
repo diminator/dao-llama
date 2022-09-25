@@ -1,5 +1,8 @@
 .App {
   text-align: center;
+  background-repeat: repeat;
+  background-size: 10%;
+  background-image: url(https://studio-abraham.infura-ipfs.io/ipfs/QmXaYPMyc3ujmnLG4Tg3Lq91LZcGWSwLzc4ouBzQkmCrrw?meta=Qma96CnitVV668cLBDx4pXBzTk6e6v1rGCpwc5rgiNMuvn);
 }
 
 .App-logo {
@@ -14,7 +17,6 @@
 }
 
 .App-header {
-  background-color: #282c34;
   min-height: 100vh;
   display: flex;
   flex-wrap: wrap;

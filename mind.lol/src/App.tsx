@@ -26,7 +26,7 @@ export const supportedContracts = JSON.parse(process.env.REACT_APP_QUEUE_ADDRESS
 const Card = ({ gif, index, total }: any) => {
   const offsetX = 50 * ((index + 1) / total) ** 3
   const offsetY = 50 * ((index + 1) / total) ** 1
-  const size = 600 * ((index + 1) / total) ** 4
+  const size = 600 * ((index + 1) / total) ** 3
   return (
     <div className="Card-container" style={{
       top: `calc(${offsetY}vh - ${size/2}px)`,
@@ -35,7 +35,7 @@ const Card = ({ gif, index, total }: any) => {
       height: `${size}px`
     }}>
       <img key={gif} src={gif} className="Card-img" style={{
-        opacity: size/600
+        opacity: (size + 200)/600
       }} />
     </div>
 )

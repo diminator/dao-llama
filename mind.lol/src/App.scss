@@ -13,7 +13,13 @@
 
 .Card-container:hover {
   z-index: 999;
-  border: 2px solid magenta;
+  opacity: 1;
+
+  .Card-img {
+    border: 2px solid magenta;
+    opacity: 0.95!important;
+    z-index: 999;
+  }
 }
 
 .Card-img {

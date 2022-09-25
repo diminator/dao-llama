@@ -8,14 +8,16 @@
 
 .Card-container {
   z-index: 0;
+  position: absolute;
 }
-.Card-img:hover {
+
+.Card-container:hover {
   z-index: 999;
   border: 2px solid magenta;
 }
 
 .Card-img {
-  position: absolute;
+  width: 100%;
 }
 
 @media (prefers-reduced-motion: no-preference) {

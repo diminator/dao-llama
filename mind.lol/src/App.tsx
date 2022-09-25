@@ -86,7 +86,7 @@ function App() {
   const handleStory = (data: any[]) => {
     let parsedStories = data.slice()
     if (stories.length) {
-      parsedStories = stories.concat(data)
+      parsedStories = stories.concat(data.slice(1))
     }
 
     parsedStories = parsedStories.map((s, index) => {
@@ -98,7 +98,7 @@ function App() {
       return s
     })
 
-    setActive(stories.length)
+    setActive(stories.length ? stories.length - 1 : 0)
     setStories(parsedStories.filter(s => !!s.uri))
     fetchedStories.push(story)
     setBeenActive(beenActive)
@@ -107,7 +107,7 @@ function App() {
   }
 
   const handleCardClick = (index: number) => {
-    setActive(index)
+    setActive(index - 1)
   }
 
   const handleTabClick = (index: number) => {
@@ -115,26 +115,27 @@ function App() {
   }
 
   const handleTabMoreClick = () => {
-    setActive(0)
-    setStory(story + 1)
+    setStory(story - 1)
     setFetchStories(true)
   }
 
   React.useEffect(() => {
     const timer = setTimeout(
       () => {
-          if (active >= stories.length - 1) {
-            setActive(0)
-            setStory(story + 1)
+          console.log(active)
+          if (active >= stories.length - 2) {
+            setStory(story - 1)
             setFetchStories(true)
-          } else {
-            setActive(active + 1)
-            if (active < stories.length - 1 && !beenActive[stories[active + 1]]) {
-              beenActive[stories[active].uri] = true
-              setBeenActive(beenActive)
-              new Image().src = stories[active + 2].uri
-            }
           }
+          setActive(active + 1)
+
+          if (!beenActive[stories[active + 1]]) {
+            beenActive[stories[active].uri] = true
+            setBeenActive(beenActive)
+          }
+          if (active < stories.length - 2)
+            new Image().src = stories[active + 2].uri
+
       }, 3000
     )
     return () => clearTimeout(timer)
@@ -144,7 +145,7 @@ function App() {
       .slice()
       .slice(active + 1, stories.length)
       .concat(stories.slice(0, active + 1))
-
+      
   return (
     <WagmiConfig client={client}>
       <ConnectKitProvider>

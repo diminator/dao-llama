@@ -80,7 +80,6 @@ function App() {
   const handleStory = (data: any[]) => {
     if (stories.length) {
       const parsedStories = data.concat(stories).map((story, index) => {
-        console.log(index, stories.length, story[0])
         if (index >= data.length)
           story[0] += data.length
         return story
@@ -98,7 +97,7 @@ function App() {
 
   const handleCardClick = (e: any, storyIndex: number, activeIndex:number) => {
     console.log(activeIndex, storyIndex, activeIndex/stories.length)
-    if ( activeIndex / stories.length < 0.5) {
+    if (stories.length <= 10 || storyIndex > 10) {
       setStory(story - 1)
       setFetchStories(true)
     }
@@ -123,7 +122,7 @@ function App() {
       .slice(active + 1, stories.length)
       .concat(stories.slice(0, active + 1))
 
-  console.log(stories, shiftedStories, active)
+  // console.log(stories, shiftedStories, active)
   return (
     <WagmiConfig client={client}>
       <ConnectKitProvider>

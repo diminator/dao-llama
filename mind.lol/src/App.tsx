@@ -116,9 +116,10 @@ function App() {
   })
 
   const shiftedStories = stories
+      .reverse()
       .slice(active + 1, stories.length)
       .concat(stories.slice(0, active + 1))
-      .reverse()
+
   console.log(stories, shiftedStories, active)
   return (
     <WagmiConfig client={client}>

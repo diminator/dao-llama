@@ -77,8 +77,11 @@ function App() {
   const handleCardClick = (e: any, index: number) => {
     console.log('click',  e)
     e.preventDefault()
+    const shiftedStory = stories.slice(index, stories.length)
+      .concat(stories.slice(0, index))
+    console.log(shiftedStory)
     // console.log(stories.slice(index, stories.length).concat(stories.slice(0, index)))
-    setStories(stories.slice(e, stories.length).concat(stories.slice(0, index)))
+    setStories(shiftedStory)
   }
 
   return (

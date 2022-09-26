@@ -6,7 +6,7 @@ import queue from './artifacts/Queue.sol/Queue.json'
 import './App.scss'
 
 const alchemyId = process.env.REACT_APP_ALCHEMY_ID
-
+const maxCards = 30
 
 interface ConfigProviderState {
   addressOrName?: string
@@ -16,11 +16,13 @@ export const supportedContracts = JSON.parse(process.env.REACT_APP_QUEUE_ADDRESS
 
 
 const Card = ({ gif, index, beenActive, total }: any) => {
-  const offsetX = 50 * ((index + 1) / total) ** 3
-  const offsetY = 50 * ((index + 1) / total) ** 1
-  const size = 600 * ((index + 1) / total) ** 3
+  const cardTotal = Math.min(total, maxCards)
+  const indexCards = (cardTotal === maxCards) ? index - (total - cardTotal): index
+  const offsetX = 50 * ((indexCards + 1) / cardTotal) ** 3
+  const offsetY = 50 * ((indexCards + 1) / cardTotal) ** 1
+  const size = 600 * ((indexCards + 1) / cardTotal) ** 3
 
-  if ((size < 50 || total - index > 30) || (index < total - 1) && !beenActive) return null
+  if ((size < 50 || total - index > maxCards) || (index < total - 1) && !beenActive) return null
   return (
     <div className="Card-container" style={{
       top: `calc(${offsetY}vh - ${size/2}px)`,
@@ -75,7 +77,7 @@ function App() {
       chains
     })
   )
-  console.log(client)
+
   const [story, setStory] = React.useState<number>(
     paramStory && parseInt(paramStory, 10) || 41)
   const [stories, setStories] = React.useState<any[]>([])
@@ -121,12 +123,10 @@ function App() {
     setFetchStories(true)
   }
 
-  console.log(pause)
   React.useEffect(() => {
     const timer = setTimeout(
       () => {
         if (!pause) {
-          console.log(active)
           if (active >= stories.length - 2) {
             if (story) {
               setStory(story - 1)
@@ -190,18 +190,21 @@ function App() {
               {fetchedStories.length > 1 &&
                 fetchedStories.map((storyIndex: number) => {
                   return (
-                    <div key={`tab-${storyIndex}`} className="Tab-container">
-                      <div
-                        className={`Tab ` + (stories[active] && stories[active].storyIndex === storyIndex ? 'active' : '')}
-                        onClick={() => handleTabClick(storyIndex)}
-                      />
-                      {stories[active] && stories[active].storyIndex && (
+                    <div key={`tab-${storyIndex}`}
+                      onClick={() => handleTabClick(storyIndex)}
+                      className="Tab-container">
+                      <div className={`Tab ` + (
+                        stories[active] && stories[active].storyIndex === storyIndex ? 'active' : ''
+                      )}/>
+                      {stories[active]
+                        && stories[active].storyIndex
+                        && stories.filter(s => s.storyIndex === storyIndex).length ? (
                         <Card
                           gif={stories.filter(s => s.storyIndex === storyIndex)[0].uri}
                           index={storyIndex}
                           beenActive={true}
                           total={1}/>
-                      )}
+                        ) : null }
                     </div>
                   )
                 })}
@@ -215,19 +218,18 @@ function App() {
                   </div>
                 </div>
             </div>
-            {
-              shiftedStories
-                .map((s: any, index: number) => (
-              <div className="Card-wrapper"
-                key={s.prompt + s.uri}
-                onClick={() => handleCardClick(s.index)}>
-                <Card
-                  gif={s.uri}
-                  index={index}
-                  beenActive={beenActive[s.uri]}
-                  total={stories.length}/>
-              </div>
-            ))}
+            {shiftedStories
+              .map((s: any, index: number) => (
+                <div className="Card-wrapper"
+                  key={s.prompt + s.uri}
+                  onClick={() => handleCardClick(s.index)}>
+                  <Card
+                    gif={s.uri}
+                    index={index}
+                    beenActive={beenActive[s.uri]}
+                    total={stories.length}/>
+                </div>
+              ))}
           </header>
         </div>
       </ConnectKitProvider>

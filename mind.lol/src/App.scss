@@ -6,9 +6,22 @@
   background-image: url(https://studio-abraham.infura-ipfs.io/ipfs/QmS9pFauDLLJAhz92tcC9zZd69GjbGzsx3yEncCd7wM4BT?meta=QmNhPJQBxNMYfhbXb5qSpsjYvvhm2dwitrCTjivqFHGfB4zQkmCrrw?meta=Qma96CnitVV668cLBDx4pXBzTk6e6v1rGCpwc5rgiNMuvn);
 }
 
+.Cards-container {
+}
+
+.Card-wrapper {
+  &:nth-last-child(2) {
+    pointer-events: none;
+  }
+}
+
 .Card-container {
   z-index: 0;
   position: absolute;
+  // &:last-child {
+  //   border: 3px solid red;
+  //   pointer-events: none;
+  // }
 }
 
 .Card-container:hover {
@@ -27,21 +40,8 @@
   width: 100%;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .Card-img {
-    // animation: App-logo-spin infinite 20s linear;
-  }
-}
-
 .App-header {
-  // min-height: 100vh;
-  // display: flex;
-  // flex-wrap: wrap;
-  // flex-direction: row;
-  // align-items: center;
-  // justify-content: center;
   font-size: calc(10px + 2vmin);
-  // color: white;
 }
 
 .App-link {
@@ -108,14 +108,6 @@
 .Tab-more {
   color: magenta;
   background: magenta;
-  .Tab-more-label {
-    visibility: hidden;
-  }
-  &:hover {
-    .Tab-more-label {
-      visibility: visible;
-    }
-  }
 }
 
 .active {

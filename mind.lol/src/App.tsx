@@ -1,9 +1,13 @@
 import React from 'react'
 import {useLocation} from 'react-router-dom'
+import ReactGA from 'react-ga'
 import { chain, useNetwork, createClient, useContractRead, WagmiConfig } from 'wagmi'
 import { ConnectKitProvider, getDefaultClient } from 'connectkit'
 import queue from './artifacts/Queue.sol/Queue.json'
 import './App.scss'
+
+ReactGA.initialize('G-QY6WEXMEKX')
+ReactGA.pageview(window.location.pathname + window.location.search)
 
 const alchemyId = process.env.REACT_APP_ALCHEMY_ID
 const maxCards = 30
@@ -111,7 +115,7 @@ function App() {
   }
 
   const handleCardClick = (index: number) => {
-    setActive(index - 1)
+    setActive(index)
   }
 
   const handleTabClick = (index: number) => {
@@ -177,7 +181,7 @@ function App() {
       .slice()
       .slice(active + 1, stories.length)
       .concat(stories.slice(0, active + 1))
-
+  console.log(active)
   return (
     <WagmiConfig client={client}>
       <ConnectKitProvider>
@@ -218,18 +222,20 @@ function App() {
                   </div>
                 </div>
             </div>
-            {shiftedStories
-              .map((s: any, index: number) => (
-                <div className="Card-wrapper"
-                  key={s.prompt + s.uri}
-                  onClick={() => handleCardClick(s.index)}>
-                  <Card
-                    gif={s.uri}
-                    index={index}
-                    beenActive={beenActive[s.uri]}
-                    total={stories.length}/>
-                </div>
-              ))}
+            <div className="Cards-container">
+              {shiftedStories
+                .map((s: any, index: number) => (
+                  <div className="Card-wrapper"
+                    key={s.prompt + s.uri}
+                    onClick={() => handleCardClick(s.index)}>
+                    <Card
+                      gif={s.uri}
+                      index={index}
+                      beenActive={beenActive[s.uri]}
+                      total={stories.length}/>
+                  </div>
+                ))}
+              </div>
           </header>
         </div>
       </ConnectKitProvider>

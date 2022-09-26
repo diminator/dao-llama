@@ -128,17 +128,23 @@ function App() {
         if (!pause) {
           console.log(active)
           if (active >= stories.length - 2) {
-            setStory(story - 1)
-            setFetchStories(true)
+            if (story) {
+              setStory(story - 1)
+              setFetchStories(true)
+              setActive(active + 1)
+            } else {
+              console.log('done')
+              setActive(0)
+            }
           }
-          setActive(active + 1)
-
           if (!beenActive[stories[active + 1]]) {
             beenActive[stories[active].uri] = true
             setBeenActive(beenActive)
           }
-          if (active < stories.length - 2)
+          if (active < stories.length - 2) {
+            setActive(active + 1)
             new Image().src = stories[active + 2].uri
+          }
         }
       }, 3000
     )
@@ -184,19 +190,29 @@ function App() {
               {fetchedStories.length > 1 &&
                 fetchedStories.map((storyIndex: number) => {
                   return (
-                    <div
-                      key={`tab-${storyIndex}`}
-                      className={`Tab ` + (stories[active] && stories[active].storyIndex === storyIndex ? 'active' : '')}
-                      onClick={() => handleTabClick(storyIndex)}
-                    />
+                    <div key={`tab-${storyIndex}`} className="Tab-container">
+                      <div
+                        className={`Tab ` + (stories[active] && stories[active].storyIndex === storyIndex ? 'active' : '')}
+                        onClick={() => handleTabClick(storyIndex)}
+                      />
+                      {stories[active] && stories[active].storyIndex && (
+                        <Card
+                          gif={stories.filter(s => s.storyIndex === storyIndex)[0].uri}
+                          index={storyIndex}
+                          beenActive={true}
+                          total={1}/>
+                      )}
+                    </div>
                   )
                 })}
-                <div
-                  key={`tab-more`}
-                  className={'Tab Tab-more'}
-                  onClick={handleTabMoreClick}
-                >
-                  <div className="Tab-more-label">next story</div>
+                <div className="Tab-container">
+                  <div
+                    key={`tab-more`}
+                    className={'Tab Tab-more'}
+                    onClick={handleTabMoreClick}
+                  >
+                    <div className="Tab-more-label">next story</div>
+                  </div>
                 </div>
             </div>
             {

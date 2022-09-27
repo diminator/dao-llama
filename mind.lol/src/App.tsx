@@ -98,16 +98,14 @@ function App() {
     // TODO check stories length from queue
     if (!data.length) {
       setNoMoreStories(true)
+      setFetchStories(false)
       return
     }
-    console.log(story, storyIndex)
     if (stories.length) {
       if (storyIndex >= story ) {
         console.log('reverse')
-        parsedStories = data.slice(1).concat(stories)
-        fetchedStories.unshift(story)
         parsedStories = stories.concat(data.slice(1))
-        // fetchedStories.push(story)
+        fetchedStories.unshift(story)
       } else {
         parsedStories = stories.concat(data.slice(1))
         fetchedStories.push(story)
@@ -123,7 +121,6 @@ function App() {
       }
       return s
     })
-    // fetchedStories.push(story)
     setStories(parsedStories.filter(s => !!s.uri))
     setBeenActive(beenActive)
     setFetchedStories(fetchedStories.sort((a, b) => b - a))
@@ -162,7 +159,6 @@ function App() {
 
   const handleTabMoreClick = (nextStory: number) => {
     beenActive[stories[active].uri] = true
-    console.log(fetchedStories, nextStory, fetchedStories.indexOf(nextStory))
     if (!(fetchedStories.indexOf(nextStory) > -1)) {
       setStory(nextStory)
       setFetchStories(true)
@@ -175,9 +171,11 @@ function App() {
         if (!pause) {
           if (active >= stories.length - 2) {
             if (story && fetchedStories.indexOf(story - 1) === -1) {
+              console.log('fetch story', story, fetchedStories.indexOf(story - 1))
               setStory(story - 1)
               setFetchStories(true)
               setActive(active + 1)
+              return
             } else {
               console.log('done')
               setActive(0)
@@ -270,7 +268,7 @@ function App() {
                     </div>
                   )
                 })}
-              { story > 0 && (
+              { story > 0 && Math.min(...fetchedStories) > 0 && (
                 <div className="Tab-container">
                   <div
                     key={`tab-more`}

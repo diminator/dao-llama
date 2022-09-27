@@ -16,6 +16,7 @@
   &:nth-last-child(1) {
     .Card-container:hover {
       .Card-img {
+        animation: none;
         width: 100%;
       }
     }
@@ -74,13 +75,10 @@
 .Card-img {
   border: 2px solid transparent;
   width: 100%;
+  animation: shrink 3s 1;
+  animation-iteration-count: infinite;
 }
 
-.Card-mask {
-  // border: 2px solid red;
-  // height: 100%;
-  // width: 100%;
-}
 
 @keyframes pulse {
   0% {
@@ -128,10 +126,15 @@
 }
 
 .Tab-container {
-  flex: 1 0 100px;
+  flex: 1 1 auto;
   height: 5px;
   display: inline-block;
   margin: 0 2px;
+}
+
+.Tab-container:first-child,
+.Tab-container:last-child {
+  flex: 1 1 100px;
 }
 
 .Tab-container .Card-container {
@@ -165,9 +168,19 @@
   }
 }
 
+.Tab-less {
+  color: cyan;
+  background: cyan;
+}
+
+
 .Tab-more {
   color: magenta;
   background: magenta;
+}
+
+.Tab-label {
+  font-size: 14pt;
 }
 
 .active {

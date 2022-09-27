@@ -32,7 +32,6 @@ const Card = ({ gif, index, beenActive, total, children }: any) => {
       width: `${size}px`,
       height: `${size}px`
     }}>
-    <div className="Card-mask" />
     <img key={gif} src={gif} className="Card-img" style={{
       opacity: (size + 50)/600
     }} />
@@ -48,14 +47,14 @@ const QueueStory = ({ contractConfig, story, onSuccess }: any) => {
     args: [story],
     onSuccess: async (data: any) => {
       // const metadata = await parseMetadata(data)
-      console.log('getPrompts', data)
-      data.length && onSuccess(
-        data.map((s: any[], index: number) => {
+      console.log('getPrompts', story, data)
+      onSuccess(
+        [data.map((s: any[], index: number) => {
           return {
             index,
             storyIndex: story,
             ...s
-        }}) as any[])
+        }}), story] as any[])
     }
   })
 
@@ -89,26 +88,45 @@ function App() {
   const [beenActive, setBeenActive] = React.useState<any>({})
   const [fetchStories, setFetchStories] = React.useState<boolean>(true)
   const [fetchedStories, setFetchedStories] = React.useState<number[]>([])
+  const [noMoreStories, setNoMoreStories] = React.useState<boolean>(false)
 
-  const handleStory = (data: any[]) => {
-    let parsedStories = data.slice()
+  const handleStory = (response: any[]) => {
+    const data = response[0]
+    const storyIndex = response[1]
+
+    let parsedStories = data.slice() as any[]
+    // TODO check stories length from queue
+    if (!data.length) {
+      setNoMoreStories(true)
+      return
+    }
+    console.log(story, storyIndex)
     if (stories.length) {
-      parsedStories = stories.concat(data.slice(1))
+      if (storyIndex >= story ) {
+        console.log('reverse')
+        parsedStories = data.slice(1).concat(stories)
+        fetchedStories.unshift(story)
+        parsedStories = stories.concat(data.slice(1))
+        // fetchedStories.push(story)
+      } else {
+        parsedStories = stories.concat(data.slice(1))
+        fetchedStories.push(story)
+      }
+    } else {
+      fetchedStories.push(story)
     }
 
     parsedStories = parsedStories.map((s, index) => {
-      if (index >= stories.length)
-        s.index += stories.length
+      s.index = index
       if (!(Object.keys(beenActive).includes(s.uri))) {
         beenActive[s.uri] = false
       }
       return s
     })
-
+    // fetchedStories.push(story)
     setStories(parsedStories.filter(s => !!s.uri))
-    fetchedStories.push(story)
     setBeenActive(beenActive)
-    setFetchedStories(fetchedStories)
+    setFetchedStories(fetchedStories.sort((a, b) => b - a))
     setFetchStories(false)
   }
 
@@ -119,12 +137,12 @@ function App() {
   }, [pause])
 
   React.useEffect(() => {
-    document.addEventListener("keydown", spaceFunction);
+    document.addEventListener("keydown", spaceFunction)
 
     return () => {
-      document.removeEventListener("keydown", spaceFunction);
-    };
-  }, [spaceFunction]);
+      document.removeEventListener("keydown", spaceFunction)
+    }
+  }, [spaceFunction])
 
   const handleCardClick = (index: number) => {
     if (index === active){
@@ -133,8 +151,8 @@ function App() {
       setActive(index + 1)
     }
     else {
-    setActive(index)
-  }
+      setActive(index)
+    }
   }
 
   const handleTabClick = (index: number) => {
@@ -142,10 +160,13 @@ function App() {
     setActive(stories.filter(s => s.storyIndex === index)[0].index)
   }
 
-  const handleTabMoreClick = () => {
+  const handleTabMoreClick = (nextStory: number) => {
     beenActive[stories[active].uri] = true
-    setStory(story - 1)
-    setFetchStories(true)
+    console.log(fetchedStories, nextStory, fetchedStories.indexOf(nextStory))
+    if (!(fetchedStories.indexOf(nextStory) > -1)) {
+      setStory(nextStory)
+      setFetchStories(true)
+    }
   }
 
   React.useEffect(() => {
@@ -153,7 +174,7 @@ function App() {
       () => {
         if (!pause) {
           if (active >= stories.length - 2) {
-            if (story) {
+            if (story && fetchedStories.indexOf(story - 1) === -1) {
               setStory(story - 1)
               setFetchStories(true)
               setActive(active + 1)
@@ -168,6 +189,7 @@ function App() {
           }
           if (active < stories.length - 2) {
             setActive(active + 1)
+            setStory(stories[active].storyIndex)
             new Image().src = stories[active + 2].uri
           }
         }
@@ -207,7 +229,6 @@ function App() {
     .slice(activeIndex + 1, stories.length)
     .concat(stories.slice(0, activeIndex + 1))
 
-  console.log(active, beenActive)
   return (
     <WagmiConfig client={client}>
       <ConnectKitProvider>
@@ -217,6 +238,17 @@ function App() {
           )}
           <header className="App-header">
             <div className="Tabs-container">
+              { !noMoreStories && fetchedStories.length && (
+                <div className="Tab-container">
+                  <div
+                    key={`tab-less`}
+                    className={'Tab Tab-less'}
+                    onClick={() => handleTabMoreClick(Math.max(...fetchedStories) + 1)}
+                  >
+                    <div className="Tab-label">next</div>
+                  </div>
+                </div>
+              )}
               {fetchedStories.length > 1 &&
                 fetchedStories.map((storyIndex: number) => {
                   return (
@@ -238,15 +270,17 @@ function App() {
                     </div>
                   )
                 })}
+              { story > 0 && (
                 <div className="Tab-container">
                   <div
                     key={`tab-more`}
                     className={'Tab Tab-more'}
-                    onClick={handleTabMoreClick}
+                    onClick={() => handleTabMoreClick(Math.min(...fetchedStories) - 1)}
                   >
-                    <div className="Tab-more-label">next story</div>
+                    <div className="Tab-label">prev</div>
                   </div>
                 </div>
+              )}
             </div>
             <div className="Cards-container">
               {shiftedStories

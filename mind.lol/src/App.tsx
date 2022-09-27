@@ -101,6 +101,11 @@ function App() {
       setFetchStories(false)
       return
     }
+
+    if (fetchedStories.indexOf(story) >= 0) {
+      return
+    }
+
     if (stories.length) {
       if (storyIndex >= story ) {
         console.log('reverse')
@@ -121,7 +126,12 @@ function App() {
       }
       return s
     })
-    setStories(parsedStories.filter(s => !!s.uri))
+    setStories(parsedStories
+      .filter(s => !!s.uri)
+      .sort((a, b) => {
+        if (a.storyIndex === b.storyIndex) return (a.index - b.index)
+        return (b.storyIndex - a.storyIndex)
+      }))
     setBeenActive(beenActive)
     setFetchedStories(fetchedStories.sort((a, b) => b - a))
     setFetchStories(false)
@@ -142,7 +152,7 @@ function App() {
   }, [spaceFunction])
 
   const handleCardClick = (index: number) => {
-    if (index === active){
+    if (index === active && stories[active]){
       beenActive[stories[active].uri] = true
       setBeenActive(beenActive)
       setActive(index + 1)
@@ -150,18 +160,21 @@ function App() {
     else {
       setActive(index)
     }
+    stories[index] && setStory(stories[index].storyIndex)
   }
 
   const handleTabClick = (index: number) => {
     beenActive[stories[active].uri] = true
     setActive(stories.filter(s => s.storyIndex === index)[0].index)
+    setStory(index)
   }
 
   const handleTabMoreClick = (nextStory: number) => {
-    beenActive[stories[active].uri] = true
+    if (stories[active]) beenActive[stories[active].uri] = true
     if (!(fetchedStories.indexOf(nextStory) > -1)) {
       setStory(nextStory)
       setFetchStories(true)
+      setActive(stories.length)
     }
   }
 
@@ -170,6 +183,7 @@ function App() {
       () => {
         if (!pause) {
           if (active >= stories.length - 2) {
+            console.log(story, fetchedStories)
             if (story && fetchedStories.indexOf(story - 1) === -1) {
               console.log('fetch story', story, fetchedStories.indexOf(story - 1))
               setStory(story - 1)
@@ -181,7 +195,7 @@ function App() {
               setActive(0)
             }
           }
-          if (!beenActive[stories[active + 1]]) {
+          if (!beenActive[stories[active]]) {
             beenActive[stories[active].uri] = true
             setBeenActive(beenActive)
           }
@@ -226,7 +240,7 @@ function App() {
     .slice()
     .slice(activeIndex + 1, stories.length)
     .concat(stories.slice(0, activeIndex + 1))
-
+  console.log(active, story)
   return (
     <WagmiConfig client={client}>
       <ConnectKitProvider>
@@ -254,7 +268,7 @@ function App() {
                       onClick={() => handleTabClick(storyIndex)}
                       className="Tab-container">
                       <div className={`Tab ` + (
-                        stories[active] && stories[active].storyIndex === storyIndex ? 'active' : ''
+                        stories[active] && storyIndex === story ? 'active' : ''
                       )}/>
                       {stories[active]
                         && stories[active].storyIndex

@@ -5,9 +5,7 @@ import { chain, useNetwork, createClient, useContractRead, WagmiConfig } from 'w
 import { ConnectKitProvider, getDefaultClient } from 'connectkit'
 import queue from './artifacts/Queue.sol/Queue.json'
 import './App.scss'
-
-ReactGA.initialize('G-QY6WEXMEKX')
-ReactGA.pageview(window.location.pathname + window.location.search)
+import {ReactComponent as PauseSvg} from './img/pause.svg'
 
 const alchemyId = process.env.REACT_APP_ALCHEMY_ID
 const maxCards = 30
@@ -19,7 +17,7 @@ interface ConfigProviderState {
 export const supportedContracts = JSON.parse(process.env.REACT_APP_QUEUE_ADDRESS!)
 
 
-const Card = ({ gif, index, beenActive, total }: any) => {
+const Card = ({ gif, index, beenActive, total, children }: any) => {
   const cardTotal = Math.min(total, maxCards)
   const indexCards = (cardTotal === maxCards) ? index - (total - cardTotal): index
   const offsetX = 50 * ((indexCards + 1) / cardTotal) ** 3
@@ -34,9 +32,10 @@ const Card = ({ gif, index, beenActive, total }: any) => {
       width: `${size}px`,
       height: `${size}px`
     }}>
-      <img key={gif} src={gif} className="Card-img" style={{
-        opacity: (size + 50)/600
-      }} />
+    <div className="Card-mask" />
+    <img key={gif} src={gif} className="Card-img" style={{
+      opacity: (size + 50)/600
+    }} />
     </div>
   )
 }
@@ -106,7 +105,6 @@ function App() {
       return s
     })
 
-    setActive(stories.length ? stories.length - 1 : 0)
     setStories(parsedStories.filter(s => !!s.uri))
     fetchedStories.push(story)
     setBeenActive(beenActive)
@@ -114,15 +112,38 @@ function App() {
     setFetchStories(false)
   }
 
+  const spaceFunction = React.useCallback((event: any) => {
+    if (event.keyCode === 32) {
+      setPause(!pause)
+    }
+  }, [pause])
+
+  React.useEffect(() => {
+    document.addEventListener("keydown", spaceFunction);
+
+    return () => {
+      document.removeEventListener("keydown", spaceFunction);
+    };
+  }, [spaceFunction]);
+
   const handleCardClick = (index: number) => {
+    if (index === active){
+      beenActive[stories[active].uri] = true
+      setBeenActive(beenActive)
+      setActive(index + 1)
+    }
+    else {
     setActive(index)
+  }
   }
 
   const handleTabClick = (index: number) => {
+    beenActive[stories[active].uri] = true
     setActive(stories.filter(s => s.storyIndex === index)[0].index)
   }
 
   const handleTabMoreClick = () => {
+    beenActive[stories[active].uri] = true
     setStory(story - 1)
     setFetchStories(true)
   }
@@ -157,31 +178,36 @@ function App() {
 
   // User has switched back to the tab
   const onFocus = () => {
-      setPause(false)
+    setPause(false)
   }
 
   // User has switched away from the tab (AKA tab is hidden)
   const onBlur = () => {
-      setPause(true)
+    setPause(true)
   }
 
   React.useEffect(() => {
-      window.addEventListener("focus", onFocus)
-      window.addEventListener("blur", onBlur)
-      // Calls onFocus when the window first loads
-      onFocus()
-      // Specify how to clean up after this effect:
-      return () => {
-          window.removeEventListener("focus", onFocus)
-          window.removeEventListener("blur", onBlur)
-      }
+    ReactGA.initialize('G-QY6WEXMEKX')
+    ReactGA.pageview(window.location.pathname + window.location.search)
+
+    window.addEventListener("focus", onFocus)
+    window.addEventListener("blur", onBlur)
+    // Calls onFocus when the window first loads
+    onFocus()
+    // Specify how to clean up after this effect:
+    return () => {
+        window.removeEventListener("focus", onFocus)
+        window.removeEventListener("blur", onBlur)
+    }
   }, [])
 
+  const activeIndex = stories.map(s=>s.index).indexOf(active) || active
   const shiftedStories = stories
-      .slice()
-      .slice(active + 1, stories.length)
-      .concat(stories.slice(0, active + 1))
-  console.log(active)
+    .slice()
+    .slice(activeIndex + 1, stories.length)
+    .concat(stories.slice(0, activeIndex + 1))
+
+  console.log(active, beenActive)
   return (
     <WagmiConfig client={client}>
       <ConnectKitProvider>
@@ -232,10 +258,16 @@ function App() {
                       gif={s.uri}
                       index={index}
                       beenActive={beenActive[s.uri]}
-                      total={stories.length}/>
+                      total={stories.length} />
                   </div>
                 ))}
               </div>
+            {pause && (
+              <div className="Control-container">
+               <PauseSvg />
+               <div className="Control-label">press space</div>
+             </div>
+            )}
           </header>
         </div>
       </ConnectKitProvider>

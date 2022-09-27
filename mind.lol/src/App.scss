@@ -13,25 +13,61 @@
   &:nth-last-child(2) {
     pointer-events: none;
   }
+  &:nth-last-child(1) {
+    .Card-container:hover {
+      .Card-img {
+        width: 100%;
+      }
+    }
+  }
+}
+
+.Control-container {
+  position: fixed;
+  top: calc(50vh - 100px);
+  left: calc(50vw - 100px);
+  animation: fade 3s 1;
+  opacity: 0.05;
+  z-index: 1000;
+
+  svg {
+    width: 200px;
+    height: 200px;
+    fill: magenta;
+  }
+}
+
+.Control-container:hover {
+  opacity: 0.5;
+}
+
+.Control-label {
+  color: yellow
+}
+
+@keyframes fade {
+  0% {
+      opacity: 0.6;
+  }
+
+  100% {
+      opacity: 0.1;
+  }
 }
 
 .Card-container {
   z-index: 0;
   position: absolute;
-  // &:last-child {
-  //   border: 3px solid red;
-  //   pointer-events: none;
-  // }
 }
 
 .Card-container:hover {
   z-index: 999;
-  opacity: 1;
-
   .Card-img {
-    border: 2px solid magenta;
+    border-left: 2px solid rgba(black, 0.4);
     opacity: 0.9!important;
     cursor: pointer;
+    animation: pulse 0.3s 1;
+    width: 80%;
   }
 }
 
@@ -39,6 +75,30 @@
   border: 2px solid transparent;
   width: 100%;
 }
+
+.Card-mask {
+  // border: 2px solid red;
+  // height: 100%;
+  // width: 100%;
+}
+
+@keyframes pulse {
+  0% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+  }
+
+  50% {
+      transform: scale(1.02);
+      box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+  }
+
+  100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+
 
 .App-header {
   font-size: calc(10px + 2vmin);

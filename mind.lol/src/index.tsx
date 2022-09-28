@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactGA from 'react-ga';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
@@ -8,6 +9,9 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import "./index.css";
+
+ReactGA.initialize('G-QY6WEXMEKX')
+ReactGA.pageview(window.location.pathname + window.location.search)
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

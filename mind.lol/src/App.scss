@@ -6,22 +6,11 @@
   background-image: url(https://studio-abraham.infura-ipfs.io/ipfs/QmS9pFauDLLJAhz92tcC9zZd69GjbGzsx3yEncCd7wM4BT?meta=QmNhPJQBxNMYfhbXb5qSpsjYvvhm2dwitrCTjivqFHGfB4zQkmCrrw?meta=Qma96CnitVV668cLBDx4pXBzTk6e6v1rGCpwc5rgiNMuvn);
 }
 
-.Cards-container {
+.App-header {
+  font-size: calc(10px + 2vmin);
 }
 
-.Card-wrapper {
-  &:nth-last-child(2) {
-    pointer-events: none;
-  }
-  &:nth-last-child(1) {
-    .Card-container:hover {
-      .Card-img {
-        animation: none;
-        width: 100%;
-      }
-    }
-  }
-}
+.Cards-container {}
 
 .Control-container {
   position: fixed;
@@ -46,61 +35,6 @@
   color: yellow
 }
 
-@keyframes fade {
-  0% {
-      opacity: 0.6;
-  }
-
-  100% {
-      opacity: 0.1;
-  }
-}
-
-.Card-container {
-  z-index: 0;
-  position: absolute;
-}
-
-.Card-container:hover {
-  z-index: 999;
-  .Card-img {
-    border-left: 2px solid rgba(black, 0.4);
-    opacity: 0.9!important;
-    cursor: pointer;
-    animation: pulse 0.3s 1;
-    width: 80%;
-  }
-}
-
-.Card-img {
-  border: 2px solid transparent;
-  width: 100%;
-  animation: shrink 3s 1;
-  animation-iteration-count: infinite;
-}
-
-
-@keyframes pulse {
-  0% {
-      transform: scale(1);
-      box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
-  }
-
-  50% {
-      transform: scale(1.02);
-      box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
-  }
-
-  100% {
-      transform: scale(1);
-      box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
-  }
-}
-
-
-.App-header {
-  font-size: calc(10px + 2vmin);
-}
 
 .App-link {
   color: #61dafb;
@@ -113,77 +47,4 @@
   to {
     transform: rotate(360deg);
   }
-}
-
-.Tabs-container {
-  position: absolute;
-  top: 0.2em;
-  list-style: none;
-  display: flex;
-  justify-content: space-around;
-  width: 100vw;
-  flex-wrap: nowrap;
-}
-
-.Tab-container {
-  flex: 1 1 auto;
-  height: 5px;
-  display: inline-block;
-  margin: 0 2px;
-}
-
-.Tab-container:first-child,
-.Tab-container:last-child {
-  flex: 1 1 100px;
-}
-
-.Tab-container .Card-container {
-  position: inherit;
-  visibility: hidden;
-  width: 100% ! important;
-  height: auto ! important;
-  top: 0 ! important;
-  left: 0 ! important;
-  z-index: 1000 ! important;
-  .Card-img {
-    border: none;
-    max-width: 150px;
-  }
-}
-
-.Tab {
-  cursor: pointer;
-  background: grey;
-  opacity: 0.6;
-  height: 100%;
-}
-
-.Tab-container:hover {
-  .Tab {
-    opacity: 1;
-  }
-  .Card-container {
-    visibility: visible;
-    z-index: 1000 ! important;
-  }
-}
-
-.Tab-less {
-  color: cyan;
-  background: cyan;
-}
-
-
-.Tab-more {
-  color: magenta;
-  background: magenta;
-}
-
-.Tab-label {
-  font-size: 14pt;
-}
-
-.active {
-  background: yellow;
-  opacity: 1;
 }

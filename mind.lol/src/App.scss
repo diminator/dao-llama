@@ -27,24 +27,20 @@
   }
 }
 
+@keyframes fade {
+  0% {
+      opacity: 0.6;
+  }
+
+  100% {
+      opacity: 0.1;
+  }
+}
+
 .Control-container:hover {
   opacity: 0.5;
 }
 
 .Control-label {
-  color: yellow
-}
-
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes Card-img-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  color: magenta;
 }

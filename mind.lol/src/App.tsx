@@ -203,7 +203,7 @@ function App() {
                 ))}
               </div>
             {pause && (
-              <div className="Control-container">
+              <div className="Control-container" onClick={() => setPause(!pause)}>
                <PauseSvg />
                <div className="Control-label">press space</div>
              </div>

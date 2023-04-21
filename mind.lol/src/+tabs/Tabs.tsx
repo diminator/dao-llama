@@ -23,7 +23,7 @@ const Tabs = ({ stories, active, noMoreStories, onClick }: any) => {
       {fetchedStories.length > 1 &&
         fetchedStories.map((index: number) => {
           const firstOfStory = stories.find((s: any) => s.storyIndex === index)
-          console.log(firstOfStory)
+          // console.log(firstOfStory)
           return (
             <div key={`tab-${index}`}
               onClick={() => onClick(index)}

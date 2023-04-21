@@ -3,7 +3,8 @@
   height: 100vh;
   text-align: center;
   background-size: cover;
-  background-image: url(https://studio-abraham.infura-ipfs.io/ipfs/QmS9pFauDLLJAhz92tcC9zZd69GjbGzsx3yEncCd7wM4BT?meta=QmNhPJQBxNMYfhbXb5qSpsjYvvhm2dwitrCTjivqFHGfB4zQkmCrrw?meta=Qma96CnitVV668cLBDx4pXBzTk6e6v1rGCpwc5rgiNMuvn);
+  background-color: black;
+  // background-image: url(https://studio-abraham.infura-ipfs.io/ipfs/QmS9pFauDLLJAhz92tcC9zZd69GjbGzsx3yEncCd7wM4BT?meta=QmNhPJQBxNMYfhbXb5qSpsjYvvhm2dwitrCTjivqFHGfB4zQkmCrrw?meta=Qma96CnitVV668cLBDx4pXBzTk6e6v1rGCpwc5rgiNMuvn);
 }
 
 .App-header {
@@ -11,6 +12,21 @@
 }
 
 .Cards-container {}
+
+.Tiles-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.Tile-wrapper {
+  flex: 0 0 200px;
+}
+
+.Tile-img {
+  width: 100%;
+  aspect-ratio: 1;
+}
 
 .Control-container {
   position: fixed;
